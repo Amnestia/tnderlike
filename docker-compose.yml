@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  tnderlike:
+    build:
+      context: .
+      dockerfile: docker/dev.Dockerfile
+    ports:
+      - '12021:80'

@@ -1,0 +1,16 @@
+{
+  "environment": "dev",
+  "auth": {
+    "pub_key": "public_key",
+    "priv_key": "private_key",
+    "local_key": "local_key",
+    "pepper": "pepper"
+  },
+  "crypt": {
+    "key": "somekey"
+  },
+  "database": {
+    "slave": "postgres://user:password@host:port/db",
+    "master": "postgres://user:password@host:port/db"
+  }
+}

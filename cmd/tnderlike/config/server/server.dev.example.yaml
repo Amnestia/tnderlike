@@ -1,0 +1,7 @@
+name: tnderlike
+server:
+  timeout: 10 # seconds
+  limiter:
+    rate: 20
+    burst: 100
+    expiration: 3 # minutes
