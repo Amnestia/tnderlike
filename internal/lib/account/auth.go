@@ -23,8 +23,7 @@ func GetData(ctx context.Context) (*Data, error) {
 	}
 	p := payload.(paseto.Payload)
 	return &Data{
-		ID:       p.ID,
-		Username: p.Username,
-		Email:    p.Email,
+		ID:    p.ID,
+		Email: p.Email,
 	}, nil
 }

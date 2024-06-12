@@ -20,7 +20,7 @@ type leveledWriter struct {
 }
 
 func (lw *leveledWriter) WriteLevel(lv zerolog.Level, p []byte) (n int, err error) {
-	if lv == zerolog.ErrorLevel {
+	if lv >= lw.level {
 		return lw.Writer.Write(p)
 	}
 	return len(p), nil
@@ -48,11 +48,11 @@ func InitLogger(serviceName, infoLog, errorLog string) (err error) {
 	if err = ensureDir(errorPath); err != nil {
 		return err
 	}
-	fileInfo, err := os.OpenFile(infoPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	fileInfo, err := os.OpenFile(infoPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open %s : %s", infoLog, err)
 	}
-	fileError, err := os.OpenFile(errorPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	fileError, err := os.OpenFile(errorPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open %s : %s", errorLog, err)
 	}

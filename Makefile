@@ -7,12 +7,13 @@ runapp:
 clean:
 	rm bin/*
 
-run: test runapp
+envgen:
+	sh scripts/envgen.sh
 
-check: test
+run: test runapp
 
 test:
 	go test ./...
 
-rundocker:
-	docker-compose up
+testapi:
+	sh scripts/testapis.sh

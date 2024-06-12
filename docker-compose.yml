@@ -8,16 +8,24 @@ services:
     volumes:
       - ./logs:/var/log/tnderlike/
     depends_on:
-      - tnderlike-db
+      tnderlike-db:
+         condition: service_healthy
+
 
   tnderlike-db:
     build:
       context: .
       dockerfile: docker/db/dev.Dockerfile
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
     ports:
     - "10001:5432"
     env_file:
-      - docker/db/db.env
+      - ./docker/db/db.env
     volumes:
       - ./docker/db/migration/:/docker-entrypoint-initdb.d
       - tnderlikedb:/var/lib/postgresql/data/
