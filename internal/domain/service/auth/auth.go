@@ -10,7 +10,6 @@ import (
 	"github.com/amnestia/tnderlike/internal/domain/constant"
 	authmodel "github.com/amnestia/tnderlike/internal/domain/model/auth"
 	"github.com/amnestia/tnderlike/internal/domain/model/common"
-	"github.com/amnestia/tnderlike/internal/lib/crypto/argon"
 	"github.com/amnestia/tnderlike/internal/lib/paseto"
 )
 
@@ -18,7 +17,7 @@ import (
 func (svc *Service) Register(ctx context.Context, acc *authmodel.Account) (resp *common.DefaultResponse) {
 	var err error
 	resp = &common.DefaultResponse{HTTPCode: http.StatusCreated}
-	acc.Password, err = argon.GenerateHash(acc.Password, svc.Config.Auth.Pepper)
+	acc.Password, err = handleGenerateHash(acc.Password, svc.Config.Auth.Pepper)
 	if err != nil {
 		resp = resp.Build(http.StatusInternalServerError, err)
 		return
@@ -57,26 +56,28 @@ func (svc *Service) Auth(ctx context.Context, acc *authmodel.Account) (resp *aut
 		}
 		return
 	}
-	valid, err := argon.VerifyHash(acc.Password, a.Password)
+	valid, err := handleVerifyHash(acc.Password, a.Password)
 	if !valid || err != nil {
 		resp.Build(http.StatusNotFound, constant.LoginFailedError{})
 		return
 	}
 
 	payload := paseto.Payload{
-		ID:       a.ID,
-		Username: a.Username,
-		Email:    a.Email,
+		ID:    a.ID,
+		Email: a.Email,
 	}
 	payload.TokenType = paseto.AccessToken
 	resp.AccessToken, err = svc.Paseto.Generate(payload)
 	if err != nil {
+		resp.AccessToken = ""
 		resp.Build(http.StatusInternalServerError, err)
 		return
 	}
 	payload.TokenType = paseto.RefreshToken
 	resp.RefreshToken, err = svc.Paseto.Generate(payload)
 	if err != nil {
+		resp.AccessToken = ""
+		resp.RefreshToken = ""
 		resp.Build(http.StatusInternalServerError, err)
 		return
 	}

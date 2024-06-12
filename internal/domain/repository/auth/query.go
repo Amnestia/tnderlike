@@ -3,7 +3,6 @@ package authrepo
 const (
 	auth = `
 		SELECT
-			username,
 			acc_email,
 			acc_password
 		FROM
@@ -16,12 +15,13 @@ const (
 
 	insertNewAccount = `
 		INSERT INTO account(
-			username,
 			acc_email,
 			acc_password,
 			created_by,
-			updated_by
-		) VALUES (:username, :email, :password, :email, :email)
+			created_at,
+			updated_by,
+			updated_at
+		) VALUES (:email, :password, :email, NOW(), :email, NOW())
 		RETURNING id
 	`
 )

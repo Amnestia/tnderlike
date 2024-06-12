@@ -15,5 +15,13 @@ bin/
 # Dependency directories (remove the comment below to include it)
 vendor/
 
+*.log
 *.dev.json
 *.dev.yaml
+
+ssl/
+*.crt
+*.key
+*.cst
+*.crl
+

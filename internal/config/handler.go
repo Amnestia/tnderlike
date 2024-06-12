@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	envKey = "VESHTIA_ENV"
+	envKey = "SERVICE_ENV"
 )
 
 // ReadJSONConfig read config file with json format

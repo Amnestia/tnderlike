@@ -7,12 +7,12 @@ runapp:
 clean:
 	rm bin/*
 
-run: test sec runapp
+run: test runapp
 
-check: test sec
+check: test
 
 test:
 	go test ./...
 
-sec:
-	gosec ./...
+rundocker:
+	docker-compose up

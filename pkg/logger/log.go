@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
@@ -25,12 +26,33 @@ func (lw *leveledWriter) WriteLevel(lv zerolog.Level, p []byte) (n int, err erro
 	return len(p), nil
 }
 
+func ensureDir(path string) (err error) {
+	d := strings.Split(path, "/")
+	d = d[:len(d)-1]
+	dir := strings.Join(d, "/")
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.MkdirAll(dir, os.ModeDir)
+		if err != nil {
+			return fmt.Errorf("failed to create dir %s : %s", dir, err)
+		}
+	}
+	return nil
+}
+
 func InitLogger(serviceName, infoLog, errorLog string) (err error) {
-	fileInfo, err := os.OpenFile(filepath.Clean(infoLog), os.O_APPEND|os.O_CREATE|os.O_RDWR, 0600)
+	infoPath := filepath.Clean(infoLog)
+	if err = ensureDir(infoPath); err != nil {
+		return err
+	}
+	errorPath := filepath.Clean(errorLog)
+	if err = ensureDir(errorPath); err != nil {
+		return err
+	}
+	fileInfo, err := os.OpenFile(infoPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		return fmt.Errorf("failed to open %s : %s", infoLog, err)
 	}
-	fileError, err := os.OpenFile(filepath.Clean(errorLog), os.O_APPEND|os.O_CREATE|os.O_RDWR, 0600)
+	fileError, err := os.OpenFile(errorPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		return fmt.Errorf("failed to open %s : %s", errorLog, err)
 	}
@@ -63,7 +85,8 @@ func InitLogger(serviceName, infoLog, errorLog string) (err error) {
 			zerolog.FatalLevel,
 		},
 	)
-	Logger = zerolog.New(w)
+	zerolog.TimeFieldFormat = time.RFC3339
+	Logger = zerolog.New(w).With().Timestamp().Logger()
 	return
 }
 
