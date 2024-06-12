@@ -95,5 +95,5 @@ Run unit tests by running ```go test ./...```
 ```make test```
 
 ### Run API tests
-Test API by executing testscripts/scripts.sh
+Test API by executing scripts/testapis.sh
 ```make testapi```
