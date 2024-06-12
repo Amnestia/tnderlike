@@ -3,7 +3,6 @@ package paseto
 // Payload struct containing auth data
 type Payload struct {
 	ID        int64  `json:"id"`
-	Username  string `json:"username"`
 	Email     string `json:"email"`
 	TokenType string `json:"token_type"`
 }

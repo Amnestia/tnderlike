@@ -57,7 +57,7 @@ func (r *Response) WriteJSON(w http.ResponseWriter) {
 	w.WriteHeader(r.StatusCode)
 	_, err := w.Write(b)
 	if err != nil {
-		logger.Logger.Error().Err(logger.ErrorWrap(err, "WriteJSON.Write"))
+		logger.Logger.Error().Err(logger.ErrorWrap(err, "WriteJSON.Write")).Send()
 	}
 }
 
@@ -67,7 +67,7 @@ func (r *Response) SetErrorResponse(code int, err error, msg ...string) *Respons
 	if len(msg) > 0 {
 		message = msg[0]
 	}
-	logger.Logger.Error().Err(logger.ErrorWrap(err, ""))
+	logger.Logger.Error().Err(logger.ErrorWrap(err, "")).Send()
 	return r.SetMessage(message).SetStatusCode(code)
 }
 

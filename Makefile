@@ -7,12 +7,13 @@ runapp:
 clean:
 	rm bin/*
 
-run: test sec runapp
+envgen:
+	sh scripts/envgen.sh
 
-check: test sec
+run: test runapp
 
 test:
 	go test ./...
 
-sec:
-	gosec ./...
+testapi:
+	sh scripts/testapis.sh

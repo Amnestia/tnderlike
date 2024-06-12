@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -57,7 +58,10 @@ func New(cfg Config, driver string) (*Base, error) {
 
 // connect connect to db
 func (d *db) connect() (*sqlx.DB, error) {
-	db, err := sqlx.Open(d.driver, d.connection)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	db, err := sqlx.ConnectContext(ctx, d.driver, d.connection)
 	if err != nil {
 		return nil, err
 	}

@@ -30,7 +30,12 @@ func (repo *Repository) Auth(ctx context.Context, email string) (*authmodel.Acco
 
 // RegisterNewAccount register new account to database
 func (repo *Repository) RegisterNewAccount(ctx context.Context, tx *sqlx.Tx, acc *authmodel.Account) (id int64, err error) {
-	err = tx.GetContext(ctx, &id, insertNewAccount, &acc)
+	q, args, err := sqlx.Named(insertNewAccount, &acc)
+	if err != nil {
+		return -1, logger.ErrorWrap(err, "repo", "Failed on parsing named parameters")
+	}
+	q = sqlx.Rebind(sqlx.DOLLAR, q)
+	err = tx.GetContext(ctx, &id, q, args...)
 	if err != nil {
 		return -1, logger.ErrorWrap(err, "repo", "Failed on creating new account")
 	}

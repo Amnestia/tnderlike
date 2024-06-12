@@ -6,6 +6,7 @@ WORKDIR /go/src/github.com/amnestia/tnderlike/service/
 RUN go mod download
 
 COPY . .
+RUN make test
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags='-w -s -extldflags "-static"' -a \
     -o /go/bin/main ./cmd/tnderlike/main.go
@@ -13,7 +14,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
 
 FROM scratch
 
-ENV VESHTIA_ENV=dev
+ENV SERVICE_ENV=dev
 
 COPY --from=builder /go/bin/main /go/bin/main
 COPY --from=builder /go/src/github.com/amnestia/tnderlike/service/cmd/tnderlike/config/server /etc/tnderlike/config/server

@@ -7,9 +7,6 @@ import (
 )
 
 func validateRegister(req *authmodel.Account) (err error) {
-	if req.Username == "" {
-		return fmt.Errorf("Username is required")
-	}
 	if req.Email == "" {
 		return fmt.Errorf("Email is required")
 	}

@@ -1,10 +1,13 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/amnestia/tnderlike/internal/config"
 	"github.com/amnestia/tnderlike/internal/domain/controller"
 	intmiddleware "github.com/amnestia/tnderlike/internal/middleware"
 	"github.com/amnestia/tnderlike/internal/middleware/auth"
+	"github.com/amnestia/tnderlike/pkg/logger"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -30,6 +33,11 @@ func New(opt Options, cfg config.Config, auth auth.AuthorizationModule, controll
 		Controller: controller,
 	}
 	r.setMiddleware()
+	r.registerRoute()
+	chi.Walk(r.Handler, func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		logger.Logger.Info().Msgf("%s : %s", method, route)
+		return nil
+	})
 	return r
 }
 
@@ -52,5 +60,6 @@ func (r *Router) setMiddleware() {
 // registerRoute register API routes
 func (router *Router) registerRoute() {
 	router.Handler.Get("/ping", router.Controller.PingHandler.Ping)
-
+	router.Handler.Post("/register", router.Controller.AuthHandler.Register)
+	router.Handler.Post("/login", router.Controller.AuthHandler.Auth)
 }

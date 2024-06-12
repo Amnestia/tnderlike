@@ -45,10 +45,9 @@ func New() *Server {
 		return nil
 	}
 
-	controller := getController(cfg, dep)
-
 	// initialize interactor(controller, service)
 	dep.past = paseto.New(cfg)
+	controller := getController(cfg, dep)
 	auth := auth.AuthorizationModule{
 		Token: dep.past,
 	}
@@ -68,6 +67,7 @@ func (s *Server) Run() int {
 		ReadTimeout:  time.Duration(s.Cfg.Server.Timeout) * time.Second,
 		WriteTimeout: time.Duration(s.Cfg.Server.Timeout) * time.Second,
 	}
+	logger.Logger.Info().Msgf("Running at :%v", s.Cfg.Server.Port)
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	go func() {
